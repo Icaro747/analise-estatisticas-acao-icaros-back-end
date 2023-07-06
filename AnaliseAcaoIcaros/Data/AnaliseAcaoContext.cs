@@ -17,9 +17,11 @@ public class AnaliseAcaoContext : DbContext
         modelBuilder.ApplyConfiguration(new PapelCofiguration());
         modelBuilder.ApplyConfiguration(new CarteiraCofiguration());
         modelBuilder.ApplyConfiguration(new DividendosCofiguration());
+        modelBuilder.ApplyConfiguration(new MovimentacaoCofiguration());
     }
 
     public DbSet<Papel> Papels { get; set; }
     public DbSet<Carteira> Carteiras { get; set; }
     public DbSet<Dividendos> Dividendos { get; set; }
+    public DbSet<Movimentacao> Movimentacao { get; set; }
 }

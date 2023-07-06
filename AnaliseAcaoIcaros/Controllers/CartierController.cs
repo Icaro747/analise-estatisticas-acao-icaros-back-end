@@ -46,30 +46,36 @@ public class CartierController : ControllerBase
     [HttpGet("PapelsGroupedByClasses")]
     public IActionResult GatPapelsGroupedByClasses([FromQuery] Guid idCarteira)
     {
-        var PapelsGroupedByClasses = _context.Papels
-            .Where(p => p.IdCarteira == idCarteira)
-            .GroupBy(p => p.Classe)
-            .Select(g => new {
+        var query = from papel in _context.Papels
+            join movimentacao in _context.Movimentacao on papel.Id equals movimentacao.IdPapel
+            where papel.IdCarteira == idCarteira
+            group movimentacao by papel.Classe into g
+            select new SelectPapelsGroupedByClasses
+            {
                 Classe = g.Key,
-                SomaQtd = g.Sum(p => p.Qtd),
-                SomaValor = g.Sum(p => p.Valor) 
-            }).ToList();
-        return Ok(PapelsGroupedByClasses);
+                Quantidade = g.Sum(m => m.Qtd),
+                Valor = g.Sum(m => m.Valor)
+            };
+
+        return Ok(query.ToList());
     }
 
-    [HttpGet("PapelsGroupedByTitulo")]
-    public IActionResult GatPapelsByTituloFilterByClasse([FromQuery] Guid idCarteira)
-    {
-        var PapelsByTituloFilterByClasse = _context.Papels
-            .Where(p => p.IdCarteira == idCarteira)
-            .GroupBy(p => p.Titulo)
-            .Select(g => new {
-                Titulo = g.Key,
-                SomaQtd = g.Sum(p => p.Qtd),
-                SomaValor = g.Sum(p => p.Valor)
-            }).ToList();
 
-        return Ok(PapelsByTituloFilterByClasse);
+    [HttpGet("PapelsGroupedByTituloFilterByClasse")]
+    public IActionResult GatPapelsByTituloFilterByClasse([FromQuery] Guid idCarteira, string classe)
+    {
+        var query = from papel in _context.Papels
+            join movimentacao in _context.Movimentacao on papel.Id equals movimentacao.IdPapel
+            where papel.IdCarteira == idCarteira && papel.Classe == classe
+            group new { movimentacao.Qtd, movimentacao.Valor } by papel.Titulo into resultadoGrupo
+            select new SelectPapelsByTituloFilterByClasse
+            {
+                Titulo = resultadoGrupo.Key,
+                Quantidade = resultadoGrupo.Sum(r => r.Qtd),
+                Valor = resultadoGrupo.Sum(r => r.Valor)
+            };
+
+        return Ok(query.ToList());
     }
 
     [HttpGet("PapelsByCarteira")]
