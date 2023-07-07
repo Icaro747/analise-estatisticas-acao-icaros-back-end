@@ -46,36 +46,62 @@ public class CartierController : ControllerBase
     [HttpGet("PapelsGroupedByClasses")]
     public IActionResult GatPapelsGroupedByClasses([FromQuery] Guid idCarteira)
     {
-        var query = from papel in _context.Papels
-            join movimentacao in _context.Movimentacao on papel.Id equals movimentacao.IdPapel
-            where papel.IdCarteira == idCarteira
-            group movimentacao by papel.Classe into g
-            select new SelectPapelsGroupedByClasses
+        var papels = _context.Papels
+            .Include(p => p.movimentacoes)
+            .Where(p => p.IdCarteira == idCarteira)
+            .ToList();
+
+        var papelsGroupedByClasses = papels
+            .GroupBy(p => p.Classe)
+            .Select(g => new SelectPapelsGroupedByClasses
             {
                 Classe = g.Key,
-                Quantidade = g.Sum(m => m.Qtd),
-                Valor = g.Sum(m => m.Valor)
-            };
+                Quantidade = g.SelectMany(p => p.movimentacoes).Sum(m => m.Qtd),
+                Valor = g.SelectMany(p => p.movimentacoes).Sum(m => m.Valor)
+            });
 
-        return Ok(query.ToList());
+        return Ok(papelsGroupedByClasses);
     }
 
 
     [HttpGet("PapelsGroupedByTituloFilterByClasse")]
     public IActionResult GatPapelsByTituloFilterByClasse([FromQuery] Guid idCarteira, string classe)
     {
-        var query = from papel in _context.Papels
-            join movimentacao in _context.Movimentacao on papel.Id equals movimentacao.IdPapel
-            where papel.IdCarteira == idCarteira && papel.Classe == classe
-            group new { movimentacao.Qtd, movimentacao.Valor } by papel.Titulo into resultadoGrupo
-            select new SelectPapelsByTituloFilterByClasse
-            {
-                Titulo = resultadoGrupo.Key,
-                Quantidade = resultadoGrupo.Sum(r => r.Qtd),
-                Valor = resultadoGrupo.Sum(r => r.Valor)
-            };
+        var papels = _context.Papels
+           .Include(p => p.movimentacoes)
+           .Where(p => p.IdCarteira == idCarteira && p.Classe == classe)
+           .ToList();
 
-        return Ok(query.ToList());
+        var PapelsByTituloFilterByClasse = papels
+            .GroupBy(p => p.Titulo)
+            .Select(g => new SelectPapelsByTituloFilterByClasse
+            {
+                Titulo = g.Key,
+                Quantidade = g.Sum(p => p.movimentacoes.Sum(m => m.Qtd)),
+                Valor = g.Sum(p => p.movimentacoes.Sum(m => m.Valor))
+            });
+
+        return Ok(PapelsByTituloFilterByClasse);
+    }
+
+    [HttpGet("GetDividendosByCarteira")]
+    public IActionResult GetDividendosByCarteira([FromQuery] Guid idCarteira)
+    {
+        var dividendosByCarteira = _context.Papels
+            .Include(p => p.Dividendos)
+            .Where(p => p.IdCarteira == idCarteira)
+            .Select(p => new
+            {
+                p.Titulo,
+                Dividendos = p.Dividendos.Select(d => new
+                {
+                    d.Data,
+                    d.Valor
+                })
+            })
+            .ToList();
+
+        return Ok(dividendosByCarteira);
     }
 
     [HttpGet("PapelsByCarteira")]
