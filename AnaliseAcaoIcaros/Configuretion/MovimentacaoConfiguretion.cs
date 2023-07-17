@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AnaliseAcaoIcaros.Configuretion;
 
-public class MovimentacaoCofiguration : IEntityTypeConfiguration<Movimentacao>
+public class MovimentacaoConfiguretion : IEntityTypeConfiguration<Movimentacao>
 {
     public void Configure(EntityTypeBuilder<Movimentacao> builder)
     {

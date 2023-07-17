@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AnaliseAcaoIcaros.Configuretion;
 
-public class DividendosCofiguration : IEntityTypeConfiguration<Dividendos>
+public class DividendosConfiguretion : IEntityTypeConfiguration<Dividendos>
 {
     public void Configure(EntityTypeBuilder<Dividendos> builder)
     {

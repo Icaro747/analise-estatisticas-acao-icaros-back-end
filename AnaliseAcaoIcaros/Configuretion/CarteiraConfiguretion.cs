@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AnaliseAcaoIcaros.Configuretion;
 
-public class CarteiraCofiguration : IEntityTypeConfiguration<Carteira>
+public class CarteiraConfiguretion : IEntityTypeConfiguration<Carteira>
 {
     public void Configure(EntityTypeBuilder<Carteira> builder)
     {
