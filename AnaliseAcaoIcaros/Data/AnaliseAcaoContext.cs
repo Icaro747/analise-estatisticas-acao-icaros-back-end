@@ -14,14 +14,16 @@ public class AnaliseAcaoContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new PapelCofiguration());
-        modelBuilder.ApplyConfiguration(new CarteiraCofiguration());
-        modelBuilder.ApplyConfiguration(new DividendosCofiguration());
-        modelBuilder.ApplyConfiguration(new MovimentacaoCofiguration());
+        modelBuilder.ApplyConfiguration(new PapelConfiguretion());
+        modelBuilder.ApplyConfiguration(new CarteiraConfiguretion());
+        modelBuilder.ApplyConfiguration(new DividendosConfiguretion());
+        modelBuilder.ApplyConfiguration(new MovimentacaoConfiguretion());
+        modelBuilder.ApplyConfiguration(new CotacoesAcoesConfiguretion());
     }
 
     public DbSet<Papel> Papels { get; set; }
     public DbSet<Carteira> Carteiras { get; set; }
     public DbSet<Dividendos> Dividendos { get; set; }
     public DbSet<Movimentacao> Movimentacao { get; set; }
+    public DbSet<CotacoesAcoes> CotacoesAcoes { get; set; }
 }

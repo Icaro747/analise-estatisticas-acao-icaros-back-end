@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AnaliseAcaoIcaros.Configuretion;
 
-public class PapelCofiguration : IEntityTypeConfiguration<Papel>
+public class PapelConfiguretion : IEntityTypeConfiguration<Papel>
 {
     public void Configure(EntityTypeBuilder<Papel> builder)
     {
